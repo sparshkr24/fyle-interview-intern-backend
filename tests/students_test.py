@@ -11,6 +11,17 @@ def test_get_assignments_student_1(client, h_student_1):
         assert assignment['student_id'] == 1
 
 
+def test_get_assignments_teacher_1(client, h_teacher_1):
+    response = client.get(
+        '/student/assignments',
+        headers=h_teacher_1
+    )
+
+    error_response = response.json
+    assert response.status_code == 403
+    assert error_response['error'] == 'FyleError'
+
+
 def test_get_assignments_student_2(client, h_student_2):
     response = client.get(
         '/student/assignments',
@@ -42,6 +53,7 @@ def test_post_assignment_student_1(client, h_student_1):
     assert data['teacher_id'] is None
 
 
+
 def test_submit_assignment_student_1(client, h_student_1):
     response = client.post(
         '/student/assignments/submit',
@@ -58,6 +70,21 @@ def test_submit_assignment_student_1(client, h_student_1):
     assert data['state'] == 'SUBMITTED'
     assert data['teacher_id'] == 2
 
+    
+def test_submit_assignment_ERROR(client, h_student_1):
+    response = client.post(
+        '/student/assignments/submit',
+        headers=h_student_1,
+        json={
+            'id': 3,
+            'teacher_id': 2
+        })
+
+    error_response = response.json
+    assert response.status_code == 401
+    assert error_response['error'] == 'FyleError'
+
+
 
 def test_assingment_resubmitt_error(client, h_student_1):
     response = client.post(
@@ -71,3 +98,4 @@ def test_assingment_resubmitt_error(client, h_student_1):
     assert response.status_code == 400
     assert error_response['error'] == 'FyleError'
     assert error_response["message"] == 'only a draft assignment can be submitted'
+
