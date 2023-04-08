@@ -1,3 +1,19 @@
+def test_ready_route(client, h_teacher_1):
+    """
+    Test that the '/' route returns a successful response
+    """
+    response = client.get('/',headers=h_teacher_1)
+    assert response.status_code == 200
+    assert response.json['status'] == 'ready'
+
+def test_invalid_route(client):
+    """
+    Test that the '/' route returns a successful response
+    """
+    response = client.get('/noapihere')
+    assert response.status_code == 404
+
+
 def test_get_assignments_teacher_1(client, h_teacher_1):
     response = client.get(
         '/teacher/assignments',
@@ -43,6 +59,24 @@ def test_grade_assignment_cross(client, h_teacher_2):
     data = response.json
 
     assert data['error'] == 'FyleError'
+
+
+# def test_grade_assignment_SUCCESS(client, h_teacher_1):
+#     """
+#     case: API should succesfully submit the grade
+#     """
+#     response = client.post(
+#         '/teacher/assignments/grade',
+#         headers=h_teacher_1,
+#         json={
+#             "id": 1,
+#             "grade": 'A'
+#         }
+#     )
+
+#     assert response.status_code == 200
+    
+    
 
 
 def test_grade_assignment_bad_grade(client, h_teacher_1):
