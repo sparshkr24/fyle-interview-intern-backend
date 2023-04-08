@@ -10,7 +10,7 @@ def test_invalid_route(client):
     """
     Test that the '/' route returns a successful response
     """
-    response = client.get('/noapihere')
+    response = client.get('/teacher/assignment/invalid_api')
     assert response.status_code == 404
 
 

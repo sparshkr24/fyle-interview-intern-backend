@@ -82,8 +82,7 @@ class Assignment(db.Model):
 
         assertions.assert_found(assignment, 'No assignment with this id was found')
         assertions.assert_valid(assignment.teacher_id == principal.teacher_id, 'This assignment is submitted to some other teacher')
-        # assertions.assert_valid(assignment.state == AssignmentStateEnum.SUBMITTED, "only a submitted assignment can be graded")
-        
+        # assertions.assert_valid(assignment.state == AssignmentStateEnum.SUBMITTED, "only a submitted assignment can be graded")        
         
         if(grade not in [member.value for member in GradeEnum]):
             raise ValidationError(status_code = 400, message = "Invalid Grade")

@@ -2,6 +2,7 @@ import json
 from flask import request
 from core.libs import assertions
 from functools import wraps
+from werkzeug.exceptions import HTTPException
 
 
 class Principal:
@@ -24,19 +25,24 @@ def auth_principal(func):
     def wrapper(*args, **kwargs):
         p_str = request.headers.get('X-Principal')
         assertions.assert_auth(p_str is not None, 'principal not found')
-        p_dict = json.loads(p_str)
-        p = Principal(
-            user_id=p_dict['user_id'],
-            student_id=p_dict.get('student_id'),
-            teacher_id=p_dict.get('teacher_id')
-        )
 
-        if request.path.startswith('/student'):
-            assertions.assert_true(p.student_id is not None, 'requester should be a student')
-        elif request.path.startswith('/teacher'):
-            assertions.assert_true(p.teacher_id is not None, 'requester should be a teacher')
-        else:
-            assertions.assert_found(None, 'No such api')
+        try:
+            p_dict = json.loads(p_str)
+            p = Principal(
+                user_id=p_dict['user_id'],
+                student_id=p_dict.get('student_id'),
+                teacher_id=p_dict.get('teacher_id')
+            )
+
+            if request.path.startswith('/student'):
+                assertions.assert_true(p.student_id is not None, 'requester should be a student')
+            elif request.path.startswith('/teacher'):
+                assertions.assert_true(p.teacher_id is not None, 'requester should be a teacher')
+            else:
+                raise KeyError('No such api')
+
+        except (json.JSONDecodeError, KeyError):
+            raise HTTPException(description="invalid request header: Sparsh")
 
         return func(p, *args, **kwargs)
     return wrapper

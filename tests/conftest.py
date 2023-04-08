@@ -54,3 +54,13 @@ def h_teacher_2():
     }
 
     return headers
+
+@pytest.fixture
+def h_invalid():
+    headers = {
+        'X-Principal': json.dumps({
+            
+        })
+    }
+
+    return headers

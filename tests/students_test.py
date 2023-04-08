@@ -1,3 +1,30 @@
+def test_auth_principal_invalid_header(client, h_invalid):
+    """
+    Test that an HTTPException is raised when 'X-Principal' header cannot be parsed properly
+    """
+    response = client.post(
+        '/student/assignments',
+        headers=h_invalid,
+        json={
+            'id': 1,
+            'content': 'test content'
+        }
+    )
+
+
+def test_auth_principal_NO_header(client):
+    """
+    Test that an HTTPException is raised when 'X-Principal' header cannot be parsed properly
+    """
+    response = client.post(
+        '/student/assignments',
+        json={
+            'id': 1,
+            'content': 'test content'
+        }
+    )
+
+
 def test_get_assignments_student_1(client, h_student_1):
     response = client.get(
         '/student/assignments',
@@ -118,4 +145,3 @@ def test_assingment_resubmitt_error(client, h_student_1):
     assert response.status_code == 400
     assert error_response['error'] == 'FyleError'
     assert error_response["message"] == 'only a draft assignment can be submitted'
-
