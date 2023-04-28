@@ -61,23 +61,6 @@ def test_grade_assignment_cross(client, h_teacher_2):
     assert data['error'] == 'FyleError'
 
 
-def test_grade_assignment_SUCCESS(client, h_teacher_1):
-    """
-    case: API should succesfully submit the grade
-    """
-    response = client.post(
-        '/teacher/assignments/grade',
-        headers=h_teacher_1,
-        json={
-            "id": 1,
-            "grade": 'A'
-        }
-    )
-
-    assert response.status_code == 200
-    
-
-
 def test_grade_assignment_bad_grade(client, h_teacher_1):
     """
     failure case: API should not allow only grades available in enum
@@ -134,3 +117,21 @@ def test_grade_assignment_draft_assignment(client, h_teacher_1):
 
     assert data['error'] == 'FyleError'
 
+def test_grade_assignment_SUCCESS(client, h_teacher_1):
+    """
+    case: API should succesfully submit the grade
+    """
+    response = client.post(
+        '/teacher/assignments/grade',
+        headers=h_teacher_1,
+        json={
+            "id": 1,
+            "grade": 'A'
+        }
+    )
+
+    assert response.status_code == 200
+    data = response.json['data']
+    
+    assert data['grade'] == 'A'
+    assert data['state'] == 'GRADED'
