@@ -117,6 +117,26 @@ def test_grade_assignment_draft_assignment(client, h_teacher_1):
 
     assert data['error'] == 'FyleError'
 
+
+def test_grade_assignment_bad_grade2(client, h_teacher_1):
+    """
+    failure case: API should not allow only grades available in enum
+    """
+    response = client.post(
+        '/teacher/assignments/grade',
+        headers=h_teacher_1,
+        json={
+            "id": 1,
+            "grade": 9.50
+        }
+    )
+
+    assert response.status_code == 400
+    data = response.json
+
+    assert data['error'] == 'ValidationError'
+
+
 def test_grade_assignment_SUCCESS(client, h_teacher_1):
     """
     case: API should succesfully submit the grade

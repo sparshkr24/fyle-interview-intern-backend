@@ -4,6 +4,8 @@ from marshmallow_enum import EnumField
 from core.models.assignments import Assignment, GradeEnum
 from core.libs.helpers import GeneralObject
 
+# from enum import Enum
+from marshmallow import ValidationError
 
 class AssignmentSchema(SQLAlchemyAutoSchema):
     class Meta:
@@ -31,6 +33,27 @@ class AssignmentSubmitSchema(Schema):
 
     id = fields.Integer(required=True, allow_none=False)
     teacher_id = fields.Integer(required=True, allow_none=False)
+
+    @post_load
+    def initiate_class(self, data_dict, many, partial):
+        # pylint: disable=unused-argument,no-self-use
+        return GeneralObject(**data_dict)
+
+class GradeField(fields.Field):
+    def _deserialize(self, value, attr, data, **kwargs):
+        if not isinstance(value, str):
+            raise ValidationError("Grade must be a string.")
+        if value not in GradeEnum.__members__:
+            raise ValidationError("Invalid grade.")
+        return value
+
+
+class AssignmentGradeSerializer(Schema):
+    class Meta:
+        unknown = EXCLUDE
+
+    id = fields.Integer(required=True, allow_none=False)
+    grade = GradeField(required=True, allow_none=False)
 
     @post_load
     def initiate_class(self, data_dict, many, partial):
